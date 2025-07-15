@@ -1,13 +1,16 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { IoKey } from "react-icons/io5";
 import { MdOutlineMail } from "react-icons/md";
-import { NavLink } from "react-router-dom";
-
+import { NavLink, useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 import { FaHome } from "react-icons/fa";
 
+import axiosInstance from "../services/api";
+
 const Login = () => {
+  const navigate = useNavigate();
   const [loginDetails, setLoginDetails] = useState({
-    username: "",
+    email: "",
     password: "",
   });
 
@@ -20,7 +23,39 @@ const Login = () => {
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    try {
+      const result = await axiosInstance.post("/login", loginDetails);
+      if (result) {
+        localStorage.setItem("token", result.data.token);
+        localStorage.setItem("user", JSON.stringify(result.data.user));
+        Swal.fire({
+          position: "center",
+          icon: "success",
+          title: "Login Successfull",
+          showConfirmButton: false,
+          timer: 1500,
+        });
+        navigate("/dashboard");
+      }
+    } catch (error) {
+      Swal.fire({
+        position: "center",
+        icon: "error",
+        title: error?.response?.data.message || "Login failed",
+        showConfirmButton: false,
+        timer: 1500,
+      });
+      console.log(error);
+    }
   };
+  useEffect(() => {
+    const user = localStorage.getItem("user");
+
+    // If user exists in localStorage, redirect to dashboard
+    if (user) {
+      navigate("/dashboard");
+    }
+  });
 
   return (
     <div className="min-h-screen w-full flex justify-center items-center bg-gray-950 relative">

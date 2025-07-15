@@ -1,25 +1,51 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { IoKey } from "react-icons/io5";
 import { MdOutlineMail } from "react-icons/md";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 
 import { FaHome } from "react-icons/fa";
+import axiosInstance from "../services/api";
+import Swal from "sweetalert2";
 
 const Register = () => {
   const [registerDetails, setRegisterDetails] = useState({
     username: "",
     password: "",
   });
-
+  const navigate = useNavigate();
   const changeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     setRegisterDetails((prev) => ({
       ...prev,
       [e.target.name]: e.target.value,
     }));
   };
+  useEffect(() => {
+    const user = localStorage.getItem("user");
 
-  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
+    // If user exists in localStorage, redirect to dashboard
+    if (user) {
+      navigate("/dashboard");
+    }
+  });
+  const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    try {
+      const result = await axiosInstance.post("/login", registerDetails);
+      if (result) {
+        localStorage.setItem("token", result.data.token);
+        localStorage.setItem("user", JSON.stringify(result.data.user));
+        Swal.fire({
+          position: "center",
+          icon: "success",
+          title: "Successfully registered the user",
+          showConfirmButton: false,
+          timer: 1500,
+        });
+        navigate("/login");
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -42,7 +68,7 @@ const Register = () => {
         </p>
         <form
           className="flex flex-col gap-5 w-full text-white"
-          onSubmit={(e) => handleLogin(e)}
+          onSubmit={(e) => handleRegister(e)}
         >
           <div className="">
             <label className=" w-full flex items-center gap-2 border-1 p-1 rounded-md">

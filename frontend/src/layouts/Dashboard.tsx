@@ -49,31 +49,6 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
           >
             Projects
           </NavLink>
-          {/* <NavLink
-            to="/profile"
-            end
-            className={({ isActive }) =>
-              `block px-2 py-1 rounded ${
-                isActive
-                  ? "bg-emerald-400 text-gray-900"
-                  : "hover:bg-emerald-800"
-              }`
-            }
-          >
-            Profile
-          </NavLink> */}
-          <NavLink
-            to="/logout"
-            className={({ isActive }) =>
-              `block px-2 py-1 rounded ${
-                isActive
-                  ? "bg-emerald-400 text-gray-900"
-                  : "hover:bg-emerald-800"
-              }`
-            }
-          >
-            Logout
-          </NavLink>
         </nav>
       </aside>
 

@@ -1,15 +1,39 @@
 import React, { useState } from "react";
+import axiosInstance from "./../services/api";
+import Swal from "sweetalert2";
+import { useNavigate } from "react-router-dom";
 
 const AddProjectForm = () => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [status, setStatus] = useState("active");
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const navigate = useNavigate();
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const token = localStorage.getItem("token");
     const newProject = { title, description, status };
     console.log("Project submitted:", newProject);
     // Submit to backend or update state
+    try {
+      const result = await axiosInstance.post("/project/add", newProject, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (result.data.project) {
+        console.log(result.data);
+        Swal.fire({
+          text: "project added successfully",
+          icon: "success",
+        });
+      }
+      navigate("/projects");
+    } catch (error) {
+      Swal.fire({
+        text: error?.response?.data?.message || "Someting went wrong",
+        icon: "error",
+      });
+    }
   };
 
   return (
@@ -62,7 +86,7 @@ const AddProjectForm = () => {
 
       <button
         type="submit"
-        className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-2 rounded"
+        className="w-full cursor-pointer bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-2 rounded"
       >
         Add Project
       </button>

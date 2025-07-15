@@ -8,6 +8,7 @@ import ProjectDetails from "./pages/ProjectDetails";
 import UpdateProject from "./pages/UpdateProject";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import ProtectedRoutes from "./layouts/ProtectedRoutes";
 
 function App() {
   return (
@@ -15,11 +16,13 @@ function App() {
       <Routes>
         <Route path="/" element={<HomePage />} />
 
-        <Route path="/dashboard" element={<DashboardHome />} />
-        <Route path="/projects" element={<Projects />} />
-        <Route path="/project/add" element={<AddProject />} />
-        <Route path="/project/:projectId" element={<ProjectDetails />} />
-        <Route path="/update/:projectId" element={<UpdateProject />} />
+        <Route element={<ProtectedRoutes />}>
+          <Route path="/dashboard" element={<DashboardHome />} />
+          <Route path="/projects" element={<Projects />} />
+          <Route path="/project/add" element={<AddProject />} />
+          <Route path="/project/:projectId" element={<ProjectDetails />} />
+          <Route path="/update/:projectId" element={<UpdateProject />} />
+        </Route>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
       </Routes>
