@@ -45,6 +45,12 @@ Step 2 - Select src/services/api.ts
 
 Step 3 - Now change to url of backend if needed
 
+```
+const axiosInstance = axios.create({
+  baseURL: "http://localhost:5000/api/v1",   // update to backend url if needed
+});
+
+```
 ## CORS error
 
 ### From frontend
@@ -101,4 +107,6 @@ No file uploads
 
 No unit tests yet
 
-Pagination not implemented yet
+Pagination not implemented yet 
+
+Not deployed yet but provide link on deployment in readme file
