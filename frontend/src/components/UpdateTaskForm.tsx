@@ -28,7 +28,6 @@ const UpdateTaskForm = () => {
       setDescription(task.description);
       setStatus(task.status);
       setDueDate(task.dueDate?.substring(0, 10)); // format to yyyy-mm-dd
-      navigate(-1);
     } catch (error) {
       const err = error as AxiosError<{ message: string }>;
       Swal.fire({
