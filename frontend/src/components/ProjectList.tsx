@@ -1,6 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FaEdit, FaEye, FaTrash } from "react-icons/fa";
 import { NavLink } from "react-router-dom";
+import axiosInstance from "../services/api";
+import Swal from "sweetalert2";
+import type { AxiosError } from "axios";
 
 interface Project {
   id: number;
@@ -8,21 +11,53 @@ interface Project {
   status: "active" | "completed";
 }
 
-// Sample data
-const sampleProjects: Project[] = Array.from({ length: 27 }, (_, i) => ({
-  id: i + 1,
-  title: `Project ${i + 1}`,
-  status: ["active", "completed"][i % 2] as "active" | "completed",
-}));
-
 const ProjectList: React.FC = () => {
+  const [projects, setProjects] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
-
+  const getProjects = async () => {
+    try {
+      const result = await axiosInstance.get("/projects", {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+      if (result.data.projects) {
+        setProjects(result.data.projects);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  useEffect(() => {
+    getProjects();
+  }, []);
   // Filtered data
-  const filteredProjects = sampleProjects.filter((project) =>
+  const filteredProjects = projects?.filter((project) =>
     project.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
-
+  const deleteHandler = async (id: string) => {
+    try {
+      const result = await axiosInstance.delete(`/project/${id}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+      if (result.data.project) {
+        getProjects();
+        Swal.fire({
+          title: "Deleted!",
+          text: "Your file has been deleted.",
+          icon: "success",
+        });
+      }
+    } catch (error) {
+      const err = error as AxiosError<{ message: string }>;
+      Swal.fire({
+        title: err?.response?.data?.message || "Something Went Wrong",
+        icon: "error",
+      });
+    }
+  };
   return (
     <div className="p-2 rounded-md text-white">
       {/* Top bar */}
@@ -58,11 +93,11 @@ const ProjectList: React.FC = () => {
             </tr>
           </thead>
           <tbody>
-            {filteredProjects.length > 0 ? (
-              filteredProjects.map((project, index) => (
+            {filteredProjects?.length > 0 ? (
+              filteredProjects?.map((project, index) => (
                 <tr
                   key={project.id}
-                  className="bg-gray-900 hover:bg-gray-800 border-b"
+                  className="bg-gray-900 hover:bg-gray-800 border-b border-b-gray-50/10"
                 >
                   <td className="py-3 px-4">{index + 1}</td>
                   <td className="py-3 px-4 font-medium">{project.title}</td>
@@ -79,17 +114,34 @@ const ProjectList: React.FC = () => {
                   </td>
                   <td className="py-3 px-4 space-x-2 flex items-center ">
                     <button className="text-emerald-600 hover:text-emerald-800 cursor-pointer text-xl">
-                      <NavLink to={`/project/${project.id}`}>
+                      <NavLink to={`/project/${project._id}`}>
                         <FaEye />
                       </NavLink>
                     </button>
                     <button className="text-blue-600 hover:text-blue-800 cursor-pointer text-xl">
-                      <NavLink to={`/update/${project.id}`}>
+                      <NavLink to={`/update/${project._id}`}>
                         <FaEdit />
                       </NavLink>
                     </button>
 
-                    <button className="text-red-600 hover:text-red-800 cursor-pointer text-xl">
+                    <button
+                      className="text-red-600 hover:text-red-800 cursor-pointer text-xl"
+                      onClick={() => {
+                        Swal.fire({
+                          title: "Are you sure?",
+                          text: "You won't be able to revert this!",
+                          icon: "warning",
+                          showCancelButton: true,
+                          confirmButtonColor: "#3085d6",
+                          cancelButtonColor: "#d33",
+                          confirmButtonText: "Yes, delete it!",
+                        }).then((result) => {
+                          if (result.isConfirmed) {
+                            deleteHandler(project._id);
+                          }
+                        });
+                      }}
+                    >
                       <FaTrash />
                     </button>
                   </td>

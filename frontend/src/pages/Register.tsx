@@ -30,10 +30,8 @@ const Register = () => {
   const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      const result = await axiosInstance.post("/login", registerDetails);
+      const result = await axiosInstance.post("/register", registerDetails);
       if (result) {
-        localStorage.setItem("token", result.data.token);
-        localStorage.setItem("user", JSON.stringify(result.data.user));
         Swal.fire({
           position: "center",
           icon: "success",
@@ -44,7 +42,13 @@ const Register = () => {
         navigate("/login");
       }
     } catch (error) {
-      console.log(error);
+      Swal.fire({
+        position: "center",
+        icon: "error",
+        title: error?.response?.data?.message || "Something went wrong",
+        showConfirmButton: false,
+        timer: 1500,
+      });
     }
   };
 
@@ -100,7 +104,10 @@ const Register = () => {
               />
             </label>
           </div>
-          <button className="btn bg-emerald-400 p-1 rounded-md" type="submit">
+          <button
+            className="btn bg-emerald-400 p-1  hover:bg-emerald-600 cursor-pointer rounded-md"
+            type="submit"
+          >
             Register
           </button>
         </form>

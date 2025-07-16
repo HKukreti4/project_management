@@ -109,7 +109,10 @@ const Login = () => {
               />
             </label>
           </div>
-          <button className="btn bg-emerald-400 p-1 rounded-md" type="submit">
+          <button
+            className="btn bg-emerald-400 p-1 hover:bg-emerald-600 cursor-pointer rounded-md"
+            type="submit"
+          >
             Login
           </button>
         </form>

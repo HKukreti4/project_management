@@ -5,6 +5,7 @@ import dotenv from "dotenv";
 import connectDB from "./config/connectDb";
 import authRoute from "routes/auth.route";
 import projectRoutes from "routes/projectRoutes";
+import taskRoutes from "routes/task.route";
 
 dotenv.config();
 
@@ -14,7 +15,8 @@ app.use(cors({}));
 app.use(express.json());
 
 app.use("/api/v1", authRoute);
-app.use("/api/v1/project", projectRoutes);
+app.use("/api/v1", projectRoutes);
+app.use("/api/v1", taskRoutes);
 
 connectDB();
 app.listen(PORT, () => {

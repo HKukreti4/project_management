@@ -1,37 +1,71 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axiosInstance from "../services/api";
 import Swal from "sweetalert2";
 import { useNavigate, useParams } from "react-router-dom";
 import { AxiosError } from "axios";
 
-const AddTaskForm = () => {
+const UpdateTaskForm = () => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [status, setStatus] = useState("todo");
   const [dueDate, setDueDate] = useState("");
+
   const params = useParams();
   const navigate = useNavigate();
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const projectId = params.projectId;
-    const task = { title, description, status, dueDate, projectId };
+  const taskId = params.taskId;
+
+  // ✅ Fetch and set task data
+  const getTaskDetails = async () => {
     try {
-      const result = await axiosInstance.post("/create-task", task, {
+      const result = await axiosInstance.get(`/task/${taskId}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
-      if (result) {
-        Swal.fire({
-          title: "Succesfully Added task",
-          icon: "success",
-        });
-      }
+
+      const task = result.data;
+      setTitle(task.title);
+      setDescription(task.description);
+      setStatus(task.status);
+      setDueDate(task.dueDate?.substring(0, 10)); // format to yyyy-mm-dd
       navigate(-1);
     } catch (error) {
       const err = error as AxiosError<{ message: string }>;
       Swal.fire({
-        title: err?.response?.data.message,
+        title: err?.response?.data?.message || "Error loading task",
+        icon: "error",
+      });
+    }
+  };
+
+  useEffect(() => {
+    if (taskId) {
+      getTaskDetails();
+    }
+  }, [taskId]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const task = { title, description, status, dueDate };
+
+    try {
+      const result = await axiosInstance.put(`/task/${taskId}`, task, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+
+      if (result) {
+        Swal.fire({
+          title: "Successfully Updated Task",
+          icon: "success",
+        });
+        navigate(-1); // go back
+      }
+    } catch (error) {
+      const err = error as AxiosError<{ message: string }>;
+      Swal.fire({
+        title: err?.response?.data?.message || "Update Failed",
         icon: "error",
       });
     }
@@ -42,7 +76,7 @@ const AddTaskForm = () => {
       onSubmit={handleSubmit}
       className="w-full mx-auto bg-gray-900 text-white p-6 mt-4 rounded shadow space-y-4"
     >
-      <h2 className="text-2xl font-bold text-emerald-400 mb-4">Add New Task</h2>
+      <h2 className="text-2xl font-bold text-emerald-400 mb-4">Update Task</h2>
 
       <div>
         <label className="block mb-1 font-semibold" htmlFor="title">
@@ -106,10 +140,10 @@ const AddTaskForm = () => {
         type="submit"
         className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-2 rounded"
       >
-        Add Task
+        Update Task
       </button>
     </form>
   );
 };
 
-export default AddTaskForm;
+export default UpdateTaskForm;

@@ -1,4 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import axiosInstance from "../services/api";
+import { useNavigate, useParams } from "react-router-dom";
 
 type ProjectStatus = "active" | "completed";
 type title = string;
@@ -8,12 +10,53 @@ const UpdateProjectForm = () => {
   const [title, setTitle] = useState<title>("");
   const [description, setDescription] = useState<description>("");
   const [status, setStatus] = useState<ProjectStatus>("active");
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const navigate = useNavigate();
+  const params = useParams();
+  const getProjectById = async () => {
+    try {
+      const result = await axiosInstance.get(`/project/${params.projectId}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+      console.log(result);
+      if (result.data.projects) {
+        setTitle(result.data.projects[0].title);
+        setDescription(result.data.projects[0].description);
+        setStatus(result.data.projects[0].status);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  useEffect(() => {
+    getProjectById();
+  }, []);
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const newProject = { title, description, status };
-    console.log("Project submitted:", newProject);
+    const updatedProject: {
+      title: title;
+      description: description;
+      status: ProjectStatus;
+    } = { title, description, status };
+
     // Submit to backend or update state
+    try {
+      const result = await axiosInstance.put(
+        `/project/${params.projectId}`,
+        updatedProject,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      if (result.data.project) {
+        navigate(`/project/${params.projectId}`);
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
   return (
     <div>
@@ -22,7 +65,7 @@ const UpdateProjectForm = () => {
         className="mt-4 mx-auto bg-gray-900 text-white p-6 rounded-xl shadow space-y-4"
       >
         <h2 className="text-2xl font-bold text-emerald-400 mb-4">
-          Add New Project
+          Update Project
         </h2>
 
         <div>
@@ -66,9 +109,9 @@ const UpdateProjectForm = () => {
 
         <button
           type="submit"
-          className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-2 rounded"
+          className="w-full bg-emerald-600 cursor-pointer hover:bg-emerald-500 text-white font-semibold py-2 rounded"
         >
-          Add Project
+          Update
         </button>
       </form>
     </div>

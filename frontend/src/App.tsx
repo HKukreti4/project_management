@@ -9,6 +9,8 @@ import UpdateProject from "./pages/UpdateProject";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import ProtectedRoutes from "./layouts/ProtectedRoutes";
+import AddTask from "./pages/AddTask";
+import UpdateTask from "./pages/UpdateTask";
 
 function App() {
   return (
@@ -22,6 +24,8 @@ function App() {
           <Route path="/project/add" element={<AddProject />} />
           <Route path="/project/:projectId" element={<ProjectDetails />} />
           <Route path="/update/:projectId" element={<UpdateProject />} />
+          <Route path="/task/add/:projectId" element={<AddTask />} />
+          <Route path="/task/edit/:taskId" element={<UpdateTask />} />
         </Route>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />

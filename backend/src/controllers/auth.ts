@@ -26,9 +26,7 @@ export const registerUser = async (
       return;
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    const newUser = await User.create({ email, password: hashedPassword });
+    const newUser = await User.create({ email, password: password });
 
     res.status(201).json({
       message: "User registered successfully",
@@ -57,7 +55,7 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
-    console.log(isMatch);
+
     if (!isMatch) {
       res.status(401).json({ message: "Invalid credentials" });
       return;
@@ -77,7 +75,6 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
       user: { id: user._id, email: user.email },
     });
   } catch (error) {
-    console.error("Login Error:", error);
     res.status(500).json({ message: "Server Error" });
   }
 };
