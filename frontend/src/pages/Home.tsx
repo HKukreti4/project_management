@@ -1,5 +1,6 @@
 import { FaProjectDiagram, FaTasks, FaCheckCircle } from "react-icons/fa";
 import Header from "../components/Header";
+import { NavLink } from "react-router-dom";
 
 const HomePage = () => {
   return (
@@ -17,9 +18,12 @@ const HomePage = () => {
             Organize tasks, track progress, and collaborate with your team
             seamlessly.
           </p>
-          <button className="mt-6 bg-emerald-600 text-white px-6 py-3 rounded hover:bg-emerald-500">
+          <NavLink
+            to="/login"
+            className="mt-6 bg-emerald-600 text-white px-6 py-3 rounded hover:bg-emerald-500"
+          >
             Get Started
-          </button>
+          </NavLink>
         </div>
         <div className="w-full max-w-md mb-10 md:mb-0">
           <img

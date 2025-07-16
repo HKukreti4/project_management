@@ -1,4 +1,5 @@
 import { FaProjectDiagram } from "react-icons/fa";
+import { NavLink } from "react-router-dom";
 
 const Header = () => {
   return (
@@ -10,9 +11,12 @@ const Header = () => {
         </span>
       </div>
 
-      <button className="bg-emerald-600 text-white px-4 py-2 rounded hover:bg-emerald-500">
+      <NavLink
+        to="/login"
+        className="bg-emerald-600 text-white px-4 py-2 rounded hover:bg-emerald-500"
+      >
         Log in
-      </button>
+      </NavLink>
     </header>
   );
 };
