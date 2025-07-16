@@ -28,14 +28,14 @@ const Statistics = () => {
         </div>
         <p className="text-white">Total Projects</p>
       </div>
-      <div className="bg-gray-900 shadow rounded p-6 text-center">
+      {/* <div className="bg-gray-900 shadow rounded p-6 text-center">
         <div className="text-4xl font-bold text-emerald-400">7</div>
         <p className="text-white">Total Tasks</p>
       </div>
       <div className="bg-gray-900 shadow rounded p-6 text-center">
         <div className="text-4xl font-bold text-emerald-400">2</div>
         <p className="text-white">Total Pending Tasks</p>
-      </div>
+      </div> */}
     </div>
   );
 };
