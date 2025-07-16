@@ -107,6 +107,8 @@ No file uploads
 
 No unit tests yet
 
+State management not setup yet like context , redux 
+
 Pagination not implemented yet 
 
 Not deployed yet but provide link on deployment in readme file
