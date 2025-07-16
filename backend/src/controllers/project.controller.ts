@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import Project from "../models/projectModel";
 
 import { AuthRequest } from "middlewares/auth.middleware";
+import Task from "models/taskModel";
 
 export const createProject = async (req: AuthRequest, res: Response) => {
   const { title, description, status } = req.body;
@@ -58,7 +59,7 @@ export const getProjects = async (req: AuthRequest, res: Response) => {
 
   try {
     const projects = await Project.find({ userId: req.user.id });
-    console.log(projects);
+
     return res
       .status(200)
       .json({ message: "Project fetched Successfully", projects: projects });
@@ -99,5 +100,50 @@ export const deleteProject = async (req: AuthRequest, res: Response) => {
     });
   } catch (error) {
     return res.status(500).json({ error: "Server error", details: error });
+  }
+};
+
+// #find project with its task
+
+export const getUserProjectsWithTasks = async (
+  req: AuthRequest,
+  res: Response
+) => {
+  try {
+    const userId = req.user?.id;
+
+    if (!userId) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    // Get projects for user
+    const projects = await Project.find({ userId });
+
+    // Get all tasks for these projects
+    const projectIds = projects.map((p) => p._id);
+    const tasks = await Task.find({ projectId: { $in: projectIds } });
+
+    // Group tasks by project
+    const tasksByProject: Record<string, any[]> = {};
+    tasks.forEach((task) => {
+      const projectId = task.projectId.toString();
+      if (!tasksByProject[projectId]) {
+        tasksByProject[projectId] = [];
+      }
+      tasksByProject[projectId].push(task);
+    });
+
+    // Combine project with its tasks
+    const result = projects.map((project) => ({
+      ...project.toObject(),
+      tasks: tasksByProject[project._id.toString()] || [],
+    }));
+
+    return res
+      .status(200)
+      .json({ message: "succesfully fetched", projects: result });
+  } catch (error) {
+    console.error("Error fetching projects and tasks:", error);
+    return res.status(500).json({ message: "Internal Server Error" });
   }
 };

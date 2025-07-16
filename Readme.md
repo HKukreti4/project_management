@@ -51,6 +51,7 @@ const axiosInstance = axios.create({
 });
 
 ```
+
 ## CORS error
 
 ### From frontend
@@ -107,8 +108,8 @@ No file uploads
 
 No unit tests yet
 
-State management not setup yet like context , redux 
+State management not setup yet like context , redux
 
-Pagination not implemented yet 
+Pagination not implemented yet
 
-Not deployed yet but provide link on deployment in readme file
+Not deployed yet but provide link on deployment
